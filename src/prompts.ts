@@ -82,3 +82,7 @@ export function fallbackAnswer(language: Language): string {
 
   return "I do not have enough information in the HolyHosting guides to answer accurately. Please contact our human support team through the panel or Discord.";
 }
+
+export function thinkingMessage(language: Language): string {
+  return language === "es" ? "HolyBot está pensando..." : "HolyBot is thinking...";
+}

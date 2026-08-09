@@ -8,7 +8,7 @@ import {
   verifyDiscordRequest,
 } from "./discord";
 import { createChatCompletion } from "./openai";
-import { buildContext, buildSystemPrompt, buildUserPrompt, detectLanguage, fallbackAnswer } from "./prompts";
+import { buildContext, buildSystemPrompt, buildUserPrompt, detectLanguage, fallbackAnswer, thinkingMessage } from "./prompts";
 import { loadRecentHistory, retrieveChunks, saveConversationTurn } from "./rag";
 import type { DiscordInteraction, Env, Language } from "./types";
 
@@ -41,19 +41,20 @@ export default {
       });
     }
 
-    ctx.waitUntil(answerInteraction(env, interaction));
+    const question = getOption(interaction, "question")?.trim() ?? "";
+    const requestedLanguage = getOption(interaction, "language") as Language | "auto" | undefined;
+    const language = requestedLanguage && requestedLanguage !== "auto" ? requestedLanguage : detectLanguage(question);
+
+    ctx.waitUntil(answerInteraction(env, interaction, question, language));
 
     return jsonResponse({
-      type: InteractionResponseType.DeferredChannelMessageWithSource,
-      data: { flags: 64 },
+      type: InteractionResponseType.ChannelMessageWithSource,
+      data: { content: thinkingMessage(language), flags: 64 },
     });
   },
 };
 
-async function answerInteraction(env: Env, interaction: DiscordInteraction): Promise<void> {
-  const question = getOption(interaction, "question")?.trim() ?? "";
-  const requestedLanguage = getOption(interaction, "language") as Language | "auto" | undefined;
-  const language = requestedLanguage && requestedLanguage !== "auto" ? requestedLanguage : detectLanguage(question);
+async function answerInteraction(env: Env, interaction: DiscordInteraction, question: string, language: Language): Promise<void> {
   const userId = getUserId(interaction);
   const conversationId = `${interaction.guild_id ?? "dm"}:${userId}`;
 
