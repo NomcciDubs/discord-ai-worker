@@ -1,12 +1,8 @@
 import type { Language, RetrievedChunk } from "./types";
 
 export function detectLanguage(text: string): Language {
-  const spanishHints = /\b(como|cómo|servidor|instalar|ayuda|panel|mods|plugins|mundo|archivo|contraseña|puerto|error)\b/i;
+  const spanishHints = /\b(como|cómo|que|qué|para|puedo|servidor|instalar|ayuda|panel|mundo|archivo|contraseña|puerto|error|hacer|tengo|quiero|necesito)\b/i;
   return spanishHints.test(text) ? "es" : "en";
-}
-
-export function languageName(language: Language): string {
-  return language === "es" ? "Spanish" : "English";
 }
 
 export function buildContext(chunks: RetrievedChunk[]): string {
@@ -31,7 +27,7 @@ export function buildContext(chunks: RetrievedChunk[]): string {
 }
 
 export function buildSystemPrompt(language: Language, context: string): string {
-  const answerLanguage = languageName(language);
+  const languageRule = buildLanguageRule(language);
 
   return `You are HolyBot, the official support assistant for HolyHosting.
 
@@ -40,11 +36,19 @@ Critical rules:
 2. Use only the guide context below. Do not invent technical details, commands, policies, URLs, plans, prices, or panel features.
 3. Do not invent URLs. Only include links that appear in the context.
 4. If the context is not enough to answer accurately, say that there is not enough information in the HolyHosting guides and recommend contacting human support through the panel or Discord.
-5. Answer in ${answerLanguage}. If the user asks in Spanish, answer in Spanish. If the user asks in English, answer in English.
+5. ${languageRule}
 6. Be direct, practical, and use steps when useful.
 
 HolyHosting guide context:
 ${context}`;
+}
+
+function buildLanguageRule(language: Language): string {
+  if (language === "es") {
+    return "Responde exclusivamente en español. Si el contexto está en inglés, traduce la información al español. No mezcles frases en inglés como 'Yes', 'Here is', 'Steps', or 'Common errors'.";
+  }
+
+  return "Answer exclusively in English. If the context is in Spanish, translate the information into English. Do not mix Spanish phrases such as 'Sí', 'Aquí tienes', 'Pasos', or 'Errores comunes'.";
 }
 
 export function fallbackAnswer(language: Language): string {
