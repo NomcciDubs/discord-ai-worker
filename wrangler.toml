@@ -1,0 +1,16 @@
+name = "discord-ai-worker"
+main = "src/index.ts"
+compatibility_date = "2026-08-08"
+
+[vars]
+OPENAI_MODEL = "gpt-4o-mini"
+OPENAI_EMBEDDING_MODEL = "text-embedding-3-small"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "holybot-db"
+database_id = "79a6d6c5-1f31-413d-b363-2ce794a3a2fd"
+
+[[vectorize]]
+binding = "VECTORIZE"
+index_name = "holybot-index"

@@ -1,0 +1,29 @@
+{
+  "name": "discord-ai-worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --local",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit",
+    "register-command": "tsx scripts/register-command.ts",
+    "prepare-knowledge": "python python-tools/prepare_knowledge.py",
+    "validate-knowledge": "python python-tools/validate_knowledge.py",
+    "summarize-knowledge": "python python-tools/summarize_knowledge.py",
+    "build-d1-import": "python python-tools/build_d1_import_sql.py",
+    "embed-knowledge": "python python-tools/embed_knowledge.py",
+    "db:migrate:local": "wrangler d1 migrations apply holybot-db --local",
+    "db:migrate:remote": "wrangler d1 migrations apply holybot-db --remote"
+  },
+  "dependencies": {
+    "@noble/ed25519": "^2.2.3"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260808.1",
+    "dotenv": "^16.4.5",
+    "tsx": "^4.20.3",
+    "typescript": "^5.5.4",
+    "wrangler": "^4.26.0"
+  }
+}

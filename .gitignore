@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+.wrangler/
+
+# Local secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Generated knowledge files
+data/generated/
+
+# Logs and OS files
+*.log
+.DS_Store
+Thumbs.db
+
+# Build output
+dist/
+coverage/
+
+Plans/
+AGENTS.md
