@@ -19,7 +19,11 @@ export async function verifyDiscordRequest(request: Request, env: Env, body: str
   if (!signature || !timestamp) return false;
 
   const message = new TextEncoder().encode(timestamp + body);
-  return ed.verify(signature, message, env.DISCORD_PUBLIC_KEY);
+  try {
+    return await ed.verifyAsync(signature, message, env.DISCORD_PUBLIC_KEY);
+  } catch {
+    return false;
+  }
 }
 
 export function jsonResponse(data: unknown, status = 200): Response {

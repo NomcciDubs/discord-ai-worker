@@ -14,3 +14,18 @@ database_id = "79a6d6c5-1f31-413d-b363-2ce794a3a2fd"
 [[vectorize]]
 binding = "VECTORIZE"
 index_name = "holybot-index"
+
+[observability]
+enabled = false
+head_sampling_rate = 1
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+persist = true
+invocation_logs = true
+
+[observability.traces]
+enabled = false
+persist = true
+head_sampling_rate = 1
