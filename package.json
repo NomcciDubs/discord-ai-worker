@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "wrangler dev --local",
-    "deploy": "wrangler deploy",
+    "deploy": "wrangler deploy && tsx scripts/report-deploy.ts",
     "typecheck": "tsc --noEmit",
     "register-command": "tsx scripts/register-command.ts",
     "prepare-knowledge": "python python-tools/prepare_knowledge.py",
@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20260808.1",
+    "@types/node": "^26.2.0",
     "dotenv": "^16.4.5",
     "tsx": "^4.20.3",
     "typescript": "^5.5.4",

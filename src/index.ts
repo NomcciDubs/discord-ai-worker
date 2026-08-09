@@ -14,6 +14,12 @@ import type { DiscordInteraction, Env, Language } from "./types";
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+    const url = new URL(request.url);
+
+    if (request.method === "GET" && url.pathname === "/health") {
+      return handleHealth(env);
+    }
+
     if (request.method === "GET") {
       return new Response("HolyBot Discord AI Worker is running.");
     }
@@ -53,6 +59,32 @@ export default {
     });
   },
 };
+
+async function handleHealth(env: Env): Promise<Response> {
+  try {
+    await env.DB.prepare("SELECT 1").first();
+
+    return jsonResponse({
+      name: "discord-ai-worker",
+      status: "ok",
+      dependencies: {
+        d1: "ok",
+        vectorize: "configured",
+        openai: "configured",
+        discord: "configured",
+      },
+    });
+  } catch (error) {
+    return jsonResponse(
+      {
+        name: "discord-ai-worker",
+        status: "degraded",
+        error: error instanceof Error ? error.message : String(error),
+      },
+      503,
+    );
+  }
+}
 
 async function answerInteraction(env: Env, interaction: DiscordInteraction, question: string, language: Language): Promise<void> {
   const userId = getUserId(interaction);
