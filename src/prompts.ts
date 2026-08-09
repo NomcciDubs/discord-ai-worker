@@ -1,8 +1,16 @@
 import type { Language, RetrievedChunk } from "./types";
 
 export function detectLanguage(text: string): Language {
-  const spanishHints = /\b(como|cómo|que|qué|para|puedo|servidor|instalar|ayuda|panel|mundo|archivo|contraseña|puerto|error|hacer|tengo|quiero|necesito)\b/i;
-  return spanishHints.test(text) ? "es" : "en";
+  const normalized = text.toLowerCase();
+  const hasSpanishChars = /[áéíóúñ¿¡]/i.test(normalized);
+  const spanishWords = normalized.match(/\b(hola|existe|alguna|manera|mejorar|paquete|como|cómo|que|qué|para|puedo|puedes|servidor|instalar|ayuda|panel|mundo|archivo|contraseña|puerto|error|hacer|tengo|quiero|necesito|mi|mis|el|la|los|las|un|una|de|del|en|con|por|servicio|cuenta|factura|soporte)\b/g) ?? [];
+  const englishWords = normalized.match(/\b(hello|hi|how|what|can|could|server|install|help|world|file|password|port|error|do|have|want|need|my|the|a|an|of|in|with|for|service|account|invoice|support|upgrade|package)\b/g) ?? [];
+
+  if (hasSpanishChars || spanishWords.length > englishWords.length) {
+    return "es";
+  }
+
+  return "en";
 }
 
 export function buildContext(chunks: RetrievedChunk[]): string {
@@ -41,6 +49,22 @@ Critical rules:
 
 HolyHosting guide context:
 ${context}`;
+}
+
+export function buildUserPrompt(language: Language, question: string): string {
+  if (language === "es") {
+    return `Idioma obligatorio de la respuesta: español.
+No respondas en inglés aunque el contexto o mensajes anteriores estén en inglés.
+
+Pregunta del usuario:
+${question}`;
+  }
+
+  return `Required answer language: English.
+Do not answer in Spanish even if the context or previous messages are in Spanish.
+
+User question:
+${question}`;
 }
 
 function buildLanguageRule(language: Language): string {

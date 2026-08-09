@@ -8,7 +8,7 @@ import {
   verifyDiscordRequest,
 } from "./discord";
 import { createChatCompletion } from "./openai";
-import { buildContext, buildSystemPrompt, detectLanguage, fallbackAnswer } from "./prompts";
+import { buildContext, buildSystemPrompt, buildUserPrompt, detectLanguage, fallbackAnswer } from "./prompts";
 import { loadRecentHistory, retrieveChunks, saveConversationTurn } from "./rag";
 import type { DiscordInteraction, Env, Language } from "./types";
 
@@ -69,7 +69,7 @@ async function answerInteraction(env: Env, interaction: DiscordInteraction): Pro
     const answer = await createChatCompletion(env, [
       { role: "system", content: buildSystemPrompt(language, context) },
       ...history,
-      { role: "user", content: question },
+      { role: "user", content: buildUserPrompt(language, question) },
     ]);
     const finalAnswer = answer || fallbackAnswer(language);
 
